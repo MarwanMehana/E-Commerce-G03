@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ServiceAbstraction;
 using Shared;
-using Shared.DataTranferObjects;
+using Shared.DataTransferObjects.ProductModule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
