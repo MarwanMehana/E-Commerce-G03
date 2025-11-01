@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Presentation.Attributes;
 using ServiceAbstraction;
 using Shared;
 using Shared.DataTransferObjects.ProductModule;
+using Shared.ErrorModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +18,7 @@ namespace Presentation.Controllers
 
     [ApiController]
     [Route("api/[controller]")] // baseUrl/api/Products
-    public class ProductsController(IServiceManager _serviceManager) : ControllerBase
+    public class ProductsController([FromKeyedServices("Lazy")]IServiceManager _serviceManager) : ControllerBase
     {
         // Get All Products
         [HttpGet]
@@ -23,6 +27,7 @@ namespace Presentation.Controllers
         //NameDesc
         //PriceAsc
         //PriceDesc
+        [Cache(300)]
         public async Task<ActionResult<PaginatedResult<ProductDto>>> GetAllProducts([FromQuery] ProductQueryParams queryParams)
         {
             var products = await _serviceManager.ProductService.GetAllProductsAsync(queryParams);
@@ -30,6 +35,8 @@ namespace Presentation.Controllers
         }
 
         // Get Product by Id
+        [ProducesResponseType(typeof(ProductDto),StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorToReturn), StatusCodes.Status404NotFound)]
         [HttpGet("{id:int}")]
         // GET: baseUrl/api/Products/10
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
